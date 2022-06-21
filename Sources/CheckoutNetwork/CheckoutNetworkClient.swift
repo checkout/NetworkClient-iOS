@@ -10,8 +10,8 @@ import Foundation
 public class CheckoutNetworkClient: CheckoutClientInterface {
     
     var tasks: [String: URLSessionDataTask] = [:]
+    let session: Session
     
-    private let session: Session
     private let taskQueue = DispatchQueue(label: "Checkout_Network")
     
     public init() {

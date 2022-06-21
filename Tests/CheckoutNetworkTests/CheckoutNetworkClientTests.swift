@@ -15,6 +15,12 @@ final class CheckoutNetworkClientTests: XCTestCase {
         XCTAssertTrue(client.tasks.isEmpty)
     }
     
+    func testPublicInitialiser() {
+        let client = CheckoutNetworkClient()
+        XCTAssertTrue(client.tasks.isEmpty)
+        XCTAssertTrue(client.session === URLSession.shared)
+    }
+    
     func testTasksStartedAndStored() {
         let fakeSession = FakeSession()
         let fakeDataTask = FakeDataTask()
@@ -94,6 +100,32 @@ final class CheckoutNetworkClientTests: XCTestCase {
                 XCTFail("Test expects a specific error to be returned")
             case .failure(let failure):
                 XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: testResponseCode))
+            }
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(expectedData, expectedResponse, nil)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testDataTaskCompletedWithBadResponseStyle() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        
+        let expectedData = "nothing".data(using: .utf8)
+        let expectedResponse = URLResponse()
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) { (result: Result<FakeObject, Error>) in
+            expect.fulfill()
+            switch result {
+            case .success(_):
+                XCTFail("Test expects a specific error to be returned")
+            case .failure(let failure):
+                XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: 0))
             }
         }
         
