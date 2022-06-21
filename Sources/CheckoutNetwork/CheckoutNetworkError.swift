@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CheckoutNetworkError: Error {
+public enum CheckoutNetworkError: Error, Equatable {
     
     /// Review the url you provided
     case invalidURL

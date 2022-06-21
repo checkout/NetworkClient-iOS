@@ -32,8 +32,11 @@ public struct RequestConfiguration {
             throw CheckoutNetworkError.invalidURL
         }
         
+        // Prevent declaring query items if none will be needed. Result would be urls ending with "?"
+        if !queryItems.isEmpty {
+            components.queryItems = components.queryItems ?? []
+        }
         // Convert provided Query Items Dictionary to URL QueryItems components
-        components.queryItems = components.queryItems ?? []
         queryItems
             .compactMap { URLQueryItem(name: $0.key, value: $0.value) }
             .forEach { components.queryItems?.append($0) }

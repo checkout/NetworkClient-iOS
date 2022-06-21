@@ -9,18 +9,29 @@ import Foundation
 
 public class CheckoutNetworkClient: CheckoutClientInterface {
     
-    private var tasks: [String: URLSessionDataTask] = [:]
+    var tasks: [String: URLSessionDataTask] = [:]
+    
+    private let session: Session
     private let taskQueue = DispatchQueue(label: "Checkout_Network")
     
+    public init() {
+        self.session = URLSession.shared
+    }
+    
+    init(session: Session = URLSession.shared) {
+        self.session = session
+    }
+    
+    /// Create, customise and run a request with the given configuration, calling the completion handler once completed
     public func runRequest<T: Decodable>(with configuration: RequestConfiguration,
-                                              completionHandler: @escaping CompletionHandler<T>) {
+                                         completionHandler: @escaping CompletionHandler<T>) {
         taskQueue.sync {
             var taskID = UUID().uuidString
             while tasks.keys.contains(taskID) {
                 taskID = UUID().uuidString
             }
             let request = configuration.request
-            let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            let task = session.dataTask(with: request) { [weak self] data, response, error in
                 self?.tasks.removeValue(forKey: taskID)
                 if let error = error {
                     completionHandler(.failure(error))
