@@ -53,6 +53,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         XCTAssertEqual(fakeSession.calledDataTasks.count, numberOfTasksToCreate)
     }
     
+    // MARK: Data tasks with decoding
     func testDataTaskCompletedWithError() {
         let fakeSession = FakeSession()
         let client = CheckoutNetworkClient(session: fakeSession)
@@ -254,6 +255,123 @@ final class CheckoutNetworkClientTests: XCTestCase {
         XCTAssertFalse(client.tasks.isEmpty)
         let requestCompletion = fakeSession.calledDataTasks.first!.completion
         requestCompletion(fakeObjectEncoded, expectedResponse, nil)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    // MARK: Data tasks without return
+    func testDataTaskWithoutReturnCompletedWithError() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        
+        let expectedData = "nothing".data(using: .utf8)
+        let expectedResponse = URLResponse()
+        let expectedError = NSError(domain: "fail", code: 12345)
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) {
+            expect.fulfill()
+            XCTAssertEqual($0 as? NSError, expectedError)
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(expectedData, expectedResponse, expectedError)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testDataTaskWithoutReturnCompletedWithBadResponseCode() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        let testResponseCode = 300
+        
+        let expectedData = "nothing".data(using: .utf8)
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+                                               statusCode: 300,
+                                               httpVersion: nil,
+                                               headerFields: nil)
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) {
+            expect.fulfill()
+            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: testResponseCode))
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(expectedData, expectedResponse, nil)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testDataTaskWithoutReturnCompletedWithBadResponseStyle() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        
+        let expectedData = "nothing".data(using: .utf8)
+        let expectedResponse = URLResponse()
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) {
+            expect.fulfill()
+            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: 0))
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(expectedData, expectedResponse, nil)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testDataTaskWithoutReturnCompletedWithData() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        
+        let fakeObject = FakeObject(id: UUID().uuidString)
+        let fakeObjectEncoded = try! JSONEncoder().encode(fakeObject)
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+                                               statusCode: 200,
+                                               httpVersion: nil,
+                                               headerFields: nil)
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) {
+            expect.fulfill()
+            XCTAssertNil($0)
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(fakeObjectEncoded, expectedResponse, nil)
+        XCTAssertTrue(client.tasks.isEmpty)
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testDataTaskWithoutReturnCompletedWithoutData() {
+        let fakeSession = FakeSession()
+        let client = CheckoutNetworkClient(session: fakeSession)
+        let testConfig = try! RequestConfiguration(path: FakePath.testServices)
+        
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+                                               statusCode: 200,
+                                               httpVersion: nil,
+                                               headerFields: nil)
+        
+        let expect = expectation(description: "Ensure completion handler is called")
+        client.runRequest(with: testConfig) {
+            expect.fulfill()
+            XCTAssertNil($0)
+        }
+        
+        XCTAssertFalse(client.tasks.isEmpty)
+        let requestCompletion = fakeSession.calledDataTasks.first!.completion
+        requestCompletion(nil, expectedResponse, nil)
         XCTAssertTrue(client.tasks.isEmpty)
         waitForExpectations(timeout: 1)
     }

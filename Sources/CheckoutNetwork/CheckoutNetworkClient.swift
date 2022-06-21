@@ -26,24 +26,17 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
     public func runRequest<T: Decodable>(with configuration: RequestConfiguration,
                                          completionHandler: @escaping CompletionHandler<T>) {
         taskQueue.sync {
-            var taskID = UUID().uuidString
-            while tasks.keys.contains(taskID) {
-                taskID = UUID().uuidString
-            }
+            let taskID = createUniqueTaskIdentifier()
             let request = configuration.request
             let task = session.dataTask(with: request) { [weak self] data, response, error in
                 self?.tasks.removeValue(forKey: taskID)
+                guard let self = self else { return }
                 if let error = error {
                     completionHandler(.failure(error))
                     return
                 }
-                
-                guard let response = response as? HTTPURLResponse,
-                      response.statusCode >= 200,
-                      response.statusCode < 300 else {
-                    let responseCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-                    let returnError = CheckoutNetworkError.unexpectedResponseCode(code: responseCode)
-                    completionHandler(.failure(returnError))
+                if let responseError = self.getErrorFromResponse(response) {
+                    completionHandler(.failure(responseError))
                     return
                 }
 
@@ -63,4 +56,46 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
         }
     }
     
+    public func runRequest(with configuration: RequestConfiguration,
+                           completionHandler: @escaping NoDataResponseCompletionHandler) {
+        taskQueue.sync {
+            let taskID = createUniqueTaskIdentifier()
+            let request = configuration.request
+            let task = session.dataTask(with: request) { [weak self] data, response, error in
+                self?.tasks.removeValue(forKey: taskID)
+                guard let self = self else { return }
+                if let error = error {
+                    completionHandler(error)
+                    return
+                }
+                if let responseError = self.getErrorFromResponse(response) {
+                    completionHandler(responseError)
+                    return
+                }
+                completionHandler(nil)
+            }
+            self.tasks[taskID] = task
+            task.resume()
+        }
+    }
+    
+    private func createUniqueTaskIdentifier() -> String {
+        var taskID = UUID().uuidString
+        while tasks.keys.contains(taskID) {
+            taskID = UUID().uuidString
+        }
+        return taskID
+    }
+    
+    private func getErrorFromResponse(_ response: URLResponse?) -> Error? {
+        guard let response = response as? HTTPURLResponse else {
+            return CheckoutNetworkError.unexpectedResponseCode(code: 0)
+        }
+
+        guard response.statusCode >= 200,
+              response.statusCode < 300 else {
+            return CheckoutNetworkError.unexpectedResponseCode(code: response.statusCode)
+        }
+        return nil
+    }
 }
