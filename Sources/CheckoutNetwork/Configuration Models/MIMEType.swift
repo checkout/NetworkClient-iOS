@@ -14,4 +14,5 @@ public enum MIMEType: String {
     internal static let key = "Content-Type"
     
     case JSON =  "application/json"
+    case urlEncodedForm = "application/x-www-form-urlencoded"
 }
