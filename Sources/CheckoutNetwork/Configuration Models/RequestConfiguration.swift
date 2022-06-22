@@ -21,7 +21,7 @@ public struct RequestConfiguration {
     /// - Parameter customHeaders: Headers to be added to the request. If key already exists, provided value will override internal value
     /// - Parameter bodyData: Data to be added to request. Will get injected as is, so any custom encryption or logic can be applied before creating it
     /// - Parameter mimeType: Inform server how to process the request by specifying the  MIME Type associated
-    public init(path: Path,
+    public init(path: NetworkPath,
                 httpMethod: HTTPMethod = .get,
                 queryItems: [String: String] = [:],
                 customHeaders: [String: String] = [:],

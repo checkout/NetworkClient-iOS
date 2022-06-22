@@ -8,7 +8,7 @@
 import Foundation
 import CheckoutNetwork
 
-enum FakePath: Path {
+enum FakePath: NetworkPath {
     
     case testServices
     
