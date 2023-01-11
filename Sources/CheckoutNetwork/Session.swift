@@ -11,7 +11,7 @@ import Foundation
 internal protocol Session: AnyObject {
     
     /// Create a data task with the given request and completionHandler
-    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
+    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
 }
 
 extension URLSession: Session { }
