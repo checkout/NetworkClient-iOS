@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "CheckoutNetwork",
+    platforms: [
+        .iOS(.v11),
+    ],
     products: [
         .library(
             name: "CheckoutNetwork",
