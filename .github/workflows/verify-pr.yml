@@ -1,0 +1,37 @@
+name: "Verify PR"
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'release/*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: SwiftLint
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Lint Edited Files
+        run: bash .github/scripts/lintEditedFiles.sh
+
+  verify-pr:
+    name: Verify PR
+    runs-on: macos-latest
+    needs: lint
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        set -o pipefail && xcodebuild -scheme CheckoutNetwork -destination "platform=iOS Simulator,name=iPhone 14 Pro,OS=latest"
