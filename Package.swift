@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CheckoutNetwork",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v13),
     ],
     products: [
         .library(
@@ -19,12 +19,14 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CheckoutNetwork"),
+            name: "CheckoutNetwork",
+            path: "Sources/CheckoutNetwork"),
         .target(
             name: "CheckoutNetworkFakeClient",
             dependencies: ["CheckoutNetwork"]),
         .testTarget(
             name: "CheckoutNetworkTests",
-            dependencies: ["CheckoutNetwork"]),
+            dependencies: ["CheckoutNetwork"],
+            path: "Tests"),
     ]
 )

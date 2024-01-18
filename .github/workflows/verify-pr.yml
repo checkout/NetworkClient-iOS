@@ -32,6 +32,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Build
+    - name: Build the Package
       run: |
         set -o pipefail && xcodebuild -scheme CheckoutNetwork -destination "platform=iOS Simulator,name=iPhone 14 Pro,OS=latest"
+
+    - name: Run Tests
+      run: |
+        set -o pipefail && xcodebuild -scheme CheckoutNetwork -destination "platform=iOS Simulator,name=iPhone 14 Pro,OS=latest" test
