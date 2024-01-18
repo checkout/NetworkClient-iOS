@@ -17,4 +17,11 @@ public enum CheckoutNetworkError: Error, Equatable {
  
     /// Network call and completion appear valid but no data was returned making the parsing impossible. Use different call if no data is expected
     case noDataResponseReceived
+  
+    /// Network response returned with HTTP Code 422
+    case invalidData(reason: ErrorReason)
+
+
+    /// HTTP code 422 received with no meaningful data alongside
+    case invalidDataResponseReceivedWithNoData
 }
