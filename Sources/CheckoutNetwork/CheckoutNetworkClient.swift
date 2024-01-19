@@ -35,15 +35,17 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                     completionHandler(.failure(error))
                     return
                 }
-                if let responseError = self.getErrorFromResponse(response) {
-                    completionHandler(.failure(responseError))
-                    return
-                }
 
                 guard let data = data else {
                     completionHandler(.failure(CheckoutNetworkError.noDataResponseReceived))
                     return
                 }
+
+              if let responseError = self.getErrorFromResponse(response, data: data) {
+                    completionHandler(.failure(responseError))
+                    return
+                }
+
                 do {
                     let dataResponse = try JSONDecoder().decode(T.self, from: data)
                     completionHandler(.success(dataResponse))
@@ -55,7 +57,20 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
             task.resume()
         }
     }
-    
+
+    public func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T {
+      return try await withCheckedThrowingContinuation { continuation in
+        runRequest(with: configuration) { (result: Result<T, Error>) in
+          switch result {
+          case .success(let response):
+            continuation.resume(returning: response)
+          case .failure(let error):
+            continuation.resume(throwing: error)
+          }
+        }
+      }
+    }
+
     public func runRequest(with configuration: RequestConfiguration,
                            completionHandler: @escaping NoDataResponseCompletionHandler) {
         taskQueue.sync {
@@ -68,7 +83,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                     completionHandler(error)
                     return
                 }
-                if let responseError = self.getErrorFromResponse(response) {
+              if let responseError = self.getErrorFromResponse(response, data: nil) {
                     completionHandler(responseError)
                     return
                 }
@@ -87,10 +102,19 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
         return taskID
     }
     
-    private func getErrorFromResponse(_ response: URLResponse?) -> Error? {
-        guard let response = response as? HTTPURLResponse else {
+  private func getErrorFromResponse(_ response: URLResponse?, data: Data?) -> Error? {
+      guard let response = response as? HTTPURLResponse else {
             return CheckoutNetworkError.unexpectedResponseCode(code: 0)
         }
+
+      guard response.statusCode != 422 else {
+        do {
+          let errorReason = try JSONDecoder().decode(ErrorReason.self, from: data ?? Data())
+          return CheckoutNetworkError.invalidData(reason: errorReason)
+        } catch {
+          return CheckoutNetworkError.invalidDataResponseReceivedWithNoData
+        }
+      }
 
         guard response.statusCode >= 200,
               response.statusCode < 300 else {
