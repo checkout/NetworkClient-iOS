@@ -19,7 +19,10 @@ public protocol CheckoutClientInterface {
     /// Create, customise and run a request with the given configuration, calling the completion handler once completed
     func runRequest<T: Decodable>(with configuration: RequestConfiguration,
                                   completionHandler: @escaping CompletionHandler<T>)
-    
+
+    /// Async wrapper of func runRequest(_:_:) with CompletionHandler<T>
+    func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T
+
     /// Create, customise and run a request with the given configuration, calling the completion handler once completed
     func runRequest(with configuration: RequestConfiguration,
                     completionHandler: @escaping NoDataResponseCompletionHandler)
