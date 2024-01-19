@@ -1,5 +1,7 @@
 # CheckoutNetwork-iOS
 
+![SPM release (latest by date)](https://img.shields.io/github/v/release/checkout/NetworkClient-iOS?label=spm)
+
 SPM distributed shared approach to networking for iOS projects.
 
 Project does not handle any credentials or security, it simply acts as a passthrough for the request, encouraging some similar practices to be implemented for a consistent approach to networking.
