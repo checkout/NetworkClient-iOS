@@ -32,7 +32,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         
         let testConfig = try! RequestConfiguration(path: FakePath.testServices)
         client.runRequest(with: testConfig) { (result: Result<FakeObject, Error>) in }
-        
+
         XCTAssertEqual(client.tasks.count, 1)
         XCTAssertTrue(client.tasks.values.first === fakeDataTask)
         XCTAssertTrue(fakeDataTask.wasStarted)
@@ -73,7 +73,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
                 XCTAssertEqual(failure as NSError, expectedError)
             }
         }
-        
+
         XCTAssertFalse(client.tasks.isEmpty)
         let requestCompletion = fakeSession.calledDataTasks.first!.completion
         requestCompletion(expectedData, expectedResponse, expectedError)
