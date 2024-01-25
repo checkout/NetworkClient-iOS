@@ -5,7 +5,7 @@ git fetch origin main
 echo "Fetched"
 
 # Use a conditional to check if there are edited files
-if EDITED_FILES=$(git diff HEAD origin/main --name-only --diff-filter=d | grep "\.swift" | grep -v "\.swiftlint\.yml" | xargs echo | tr ' ' ',' | sed 's/,/, /g'); then
+if EDITED_FILES=$(git diff HEAD origin/main --name-only --diff-filter=d | sed 's/ //g' | grep "\.swift" | grep -v "\.swiftlint\.yml" | xargs echo | tr ' ' ',' | sed 's/,/, /g'); then
   echo "Got edited files"
   echo $EDITED_FILES
 

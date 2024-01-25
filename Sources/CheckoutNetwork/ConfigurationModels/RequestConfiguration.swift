@@ -11,8 +11,8 @@ import Foundation
 public struct RequestConfiguration {
     
     /// Request created from the consumers configuration
-    let request: URLRequest
-    
+    private(set) public var request: URLRequest
+
     /// Create request configuration with provided parameters. In case of failure will throw a `CheckoutNetworkError`
     ///
     /// - Parameter path: Should be an enum case that is able to generate URL for request
