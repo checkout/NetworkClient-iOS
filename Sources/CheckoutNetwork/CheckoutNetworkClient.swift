@@ -58,19 +58,6 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
         }
     }
 
-    public func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T {
-      return try await withCheckedThrowingContinuation { continuation in
-        runRequest(with: configuration) { (result: Result<T, Error>) in
-          switch result {
-          case .success(let response):
-            continuation.resume(returning: response)
-          case .failure(let error):
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-    }
-
     public func runRequest(with configuration: RequestConfiguration,
                            completionHandler: @escaping NoDataResponseCompletionHandler) {
         taskQueue.sync {
@@ -112,7 +99,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
           let errorReason = try JSONDecoder().decode(ErrorReason.self, from: data ?? Data())
           return CheckoutNetworkError.invalidData(reason: errorReason)
         } catch {
-          return CheckoutNetworkError.invalidDataResponseReceivedWithNoData
+          return CheckoutNetworkError.noDataResponseReceived
         }
       }
 
@@ -122,4 +109,35 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
         }
         return nil
     }
+}
+
+// MARK: Async Wrappers
+public extension CheckoutNetworkClient {
+
+  func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T {
+    return try await withCheckedThrowingContinuation { continuation in
+      runRequest(with: configuration) { (result: Result<T, Error>) in
+        switch result {
+        case .success(let response):
+          continuation.resume(returning: response)
+        case .failure(let error):
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  func runRequest(with configuration: RequestConfiguration) async throws {
+    return try await withCheckedThrowingContinuation { continuation in
+      runRequest(with: configuration) { (error: Error?) in
+
+        guard let error = error else {
+          continuation.resume(returning: Void())
+          return
+        }
+
+        continuation.resume(throwing: error)
+      }
+    }
+  }
 }
