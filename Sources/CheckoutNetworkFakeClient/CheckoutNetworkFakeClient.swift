@@ -19,13 +19,19 @@ final public class CheckoutNetworkFakeClient: CheckoutClientInterface {
         calledRequests.append((config: configuration, completion: completionHandler))
     }
 
-    public func runRequest<T: Decodable>(with configuration: CheckoutNetwork.RequestConfiguration) async throws -> T {
-        calledAsyncRequests.append(configuration)
-        return dataToBeReturned as! T
-    }
-
     public func runRequest(with configuration: RequestConfiguration,
                            completionHandler: @escaping NoDataResponseCompletionHandler) {
         calledRequests.append((configuration, completionHandler))
     }
+}
+
+extension CheckoutNetworkFakeClient {
+  public func runRequest<T: Decodable>(with configuration: CheckoutNetwork.RequestConfiguration) async throws -> T {
+      calledAsyncRequests.append(configuration)
+      return dataToBeReturned as! T
+  }
+
+  public func runRequest(with configuration: RequestConfiguration) async throws {
+      calledAsyncRequests.append(configuration)
+  }
 }
