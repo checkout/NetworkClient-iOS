@@ -28,10 +28,14 @@ final public class CheckoutNetworkFakeClient: CheckoutClientInterface {
 extension CheckoutNetworkFakeClient {
   public func runRequest<T: Decodable>(with configuration: CheckoutNetwork.RequestConfiguration) async throws -> T {
       calledAsyncRequests.append(configuration)
+      // swiftlint:disable force_cast
       return dataToBeReturned as! T
+      // swiftlint:enable force_cast
   }
 
   public func runRequest(with configuration: RequestConfiguration) async throws {
       calledAsyncRequests.append(configuration)
+      try await Task.sleep(nanoseconds: 1 * 1_000_000_000) // 1 second
+      return ()
   }
 }
