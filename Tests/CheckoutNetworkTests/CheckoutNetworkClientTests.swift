@@ -62,7 +62,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let expectedData = "nothing".data(using: .utf8)
         let expectedResponse = URLResponse()
         let expectedError = NSError(domain: "fail", code: 12345)
-        
+
         let expect = expectation(description: "Ensure completion handler is called")
         client.runRequest(with: testConfig) { (result: Result<FakeObject, Error>) in
             expect.fulfill()
@@ -70,7 +70,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
             case .success(_):
                 XCTFail("Test expects a specific error to be returned")
             case .failure(let failure):
-                XCTAssertEqual(failure as NSError, expectedError)
+                XCTAssertEqual(failure as? CheckoutNetworkError,  CheckoutNetworkError.other(underlyingError: expectedError))
             }
         }
 
@@ -100,7 +100,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
             case .success(_):
                 XCTFail("Test expects a specific error to be returned")
             case .failure(let failure):
-                XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: testResponseCode))
+                XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.unexpectedHTTPResponse(code: testResponseCode))
             }
         }
         
@@ -126,7 +126,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
             case .success(_):
                 XCTFail("Test expects a specific error to be returned")
             case .failure(let failure):
-                XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: 0))
+                XCTAssertEqual(failure as? CheckoutNetworkError, CheckoutNetworkError.invalidURLResponse)
             }
         }
         
@@ -297,7 +297,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let expect = expectation(description: "Ensure completion handler is called")
         client.runRequest(with: testConfig) {
             expect.fulfill()
-            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: testResponseCode))
+            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.unexpectedHTTPResponse(code: testResponseCode))
         }
         
         XCTAssertFalse(client.tasks.isEmpty)
@@ -318,7 +318,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let expect = expectation(description: "Ensure completion handler is called")
         client.runRequest(with: testConfig) {
             expect.fulfill()
-            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.unexpectedResponseCode(code: 0))
+            XCTAssertEqual($0 as? CheckoutNetworkError, CheckoutNetworkError.invalidURLResponse)
         }
         
         XCTAssertFalse(client.tasks.isEmpty)
