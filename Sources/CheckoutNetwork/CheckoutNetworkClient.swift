@@ -32,7 +32,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                 self?.tasks.removeValue(forKey: taskID)
                 guard let self = self else { return }
                 if let error = error {
-                    completionHandler(.failure(error))
+                    completionHandler(.failure(convertDataTaskErrorsToCheckoutNetworkError(error: error)))
                     return
                 }
 
@@ -88,56 +88,4 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
         }
         return taskID
     }
-    
-  private func getErrorFromResponse(_ response: URLResponse?, data: Data?) -> Error? {
-      guard let response = response as? HTTPURLResponse else {
-            return CheckoutNetworkError.unexpectedResponseCode(code: 0)
-        }
-
-      guard response.statusCode != 422 else {
-        do {
-          let errorReason = try JSONDecoder().decode(ErrorReason.self, from: data ?? Data())
-          return CheckoutNetworkError.invalidData(reason: errorReason)
-        } catch {
-          return CheckoutNetworkError.noDataResponseReceived
-        }
-      }
-
-        guard response.statusCode >= 200,
-              response.statusCode < 300 else {
-            return CheckoutNetworkError.unexpectedResponseCode(code: response.statusCode)
-        }
-        return nil
-    }
-}
-
-// MARK: Async Wrappers
-public extension CheckoutNetworkClient {
-
-  func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T {
-    return try await withCheckedThrowingContinuation { continuation in
-      runRequest(with: configuration) { (result: Result<T, Error>) in
-        switch result {
-        case .success(let response):
-          continuation.resume(returning: response)
-        case .failure(let error):
-          continuation.resume(throwing: error)
-        }
-      }
-    }
-  }
-
-  func runRequest(with configuration: RequestConfiguration) async throws {
-    return try await withCheckedThrowingContinuation { continuation in
-      runRequest(with: configuration) { (error: Error?) in
-
-        guard let error = error else {
-          continuation.resume(returning: Void())
-          return
-        }
-
-        continuation.resume(throwing: error)
-      }
-    }
-  }
 }

@@ -18,3 +18,9 @@ public struct ErrorReason: Decodable, Equatable {
     case errorCodes = "error_codes"
   }
 }
+
+extension ErrorReason: CustomStringConvertible {
+  public var description: String {
+    "\(requestID) \(errorType) \(errorCodes.joined(separator: ", "))"
+  }
+}

@@ -22,7 +22,7 @@ concurrency:
 jobs:
   analyze:
     name: Analyze
-    runs-on: [ macos-latest ]
+    runs-on: macos-14-xlarge
     permissions:
       actions: read
       contents: read
@@ -39,6 +39,14 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Select Xcode
+      run: |
+        sudo xcode-select -switch /Applications/Xcode_15.2.app
+
+    - name: Log xcodebuild Version
+      run: |
+        xcodebuild -version
+
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
@@ -48,7 +56,7 @@ jobs:
 
     - name: Build
       run: |
-        xcodebuild -scheme CheckoutNetwork -destination "platform=iOS Simulator,name=iPhone 14 Pro,OS=latest"
+        xcodebuild -scheme CheckoutNetwork -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=latest"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

@@ -9,8 +9,6 @@ import Foundation
 
 /// Interface for a network client that can support Checkout networking requirements
 public protocol CheckoutClientInterface {
-    
-    // MARK: Type Assignments
 
     /// Completion handler that will return a result containing a decodable object or an error
     typealias CompletionHandler<T> = ((Result<T, Error>) -> Void)
