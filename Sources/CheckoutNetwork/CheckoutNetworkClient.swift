@@ -32,7 +32,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                 self?.tasks.removeValue(forKey: taskID)
                 guard let self = self else { return }
                 if let error = error {
-                    completionHandler(.failure(convertDataTaskErrorsToCheckoutNetworkError(error: error)))
+                  completionHandler(.failure(self.convertDataTaskErrorsToCheckoutNetworkError(error: error)))
                     return
                 }
 
