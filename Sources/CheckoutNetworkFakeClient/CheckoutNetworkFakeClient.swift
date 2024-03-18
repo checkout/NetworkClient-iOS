@@ -13,6 +13,7 @@ final public class CheckoutNetworkFakeClient: CheckoutClientInterface {
 
     public var calledAsyncRequests: [RequestConfiguration] = []
     public var dataToBeReturned: Decodable!
+    public var errorToBeThrown: CheckoutNetworkError?
 
     public func runRequest<T: Decodable>(with configuration: RequestConfiguration,
                                          completionHandler: @escaping CompletionHandler<T>) {
@@ -29,13 +30,19 @@ extension CheckoutNetworkFakeClient {
   public func runRequest<T: Decodable>(with configuration: CheckoutNetwork.RequestConfiguration) async throws -> T {
       calledAsyncRequests.append(configuration)
       // swiftlint:disable force_cast
-      return dataToBeReturned as! T
+      guard let error = errorToBeThrown else {
+        return dataToBeReturned as! T
+      }
+      throw error
       // swiftlint:enable force_cast
   }
 
   public func runRequest(with configuration: RequestConfiguration) async throws {
       calledAsyncRequests.append(configuration)
       try await Task.sleep(nanoseconds: 1 * 1_000_000_000) // 1 second
-      return ()
+      guard let error = errorToBeThrown else {
+        return ()
+      }
+      throw error
   }
 }
