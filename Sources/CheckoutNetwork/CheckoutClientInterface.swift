@@ -11,10 +11,10 @@ import Foundation
 public protocol CheckoutClientInterface {
 
     /// Completion handler that will return a result containing a decodable object or an error
-    typealias CompletionHandler<T> = ((Result<T, Error>) -> Void)
-    
+    typealias CompletionHandler<T> = ((Result<T, CheckoutNetworkError>) -> Void)
+
     /// Completion handler that will return errors if it fails or nothing if it completes as expected
-    typealias NoDataResponseCompletionHandler = ((Error?) -> Void)
+    typealias NoDataResponseCompletionHandler = ((CheckoutNetworkError?) -> Void)
   
     // MARK: Traditional Base Methods
   

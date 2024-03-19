@@ -32,12 +32,12 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                 self?.tasks.removeValue(forKey: taskID)
                 guard let self = self else { return }
                 if let error = error {
-                  completionHandler(.failure(self.convertDataTaskErrorsToCheckoutNetworkError(error: error)))
+                    completionHandler(.failure(self.convertDataTaskErrorsToCheckoutNetworkError(error: error)))
                     return
                 }
 
                 guard let data = data else {
-                    completionHandler(.failure(CheckoutNetworkError.noDataResponseReceived))
+                    completionHandler(.failure(.noDataResponseReceived))
                     return
                 }
 
@@ -53,7 +53,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
 
                     completionHandler(.success(dataResponse))
                 } catch {
-                    completionHandler(.failure(error))
+                    completionHandler(.failure(.decoding(errorDescription: error.localizedDescription)))
                 }
             }
             self.tasks[taskID] = task
@@ -69,8 +69,9 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
             let task = session.dataTask(with: request) { [weak self] data, response, error in
                 self?.tasks.removeValue(forKey: taskID)
                 guard let self = self else { return }
+
                 if let error = error {
-                    completionHandler(error)
+                    completionHandler(self.convertDataTaskErrorsToCheckoutNetworkError(error: error))
                     return
                 }
               if let responseError = self.getErrorFromResponse(response, data: data) {

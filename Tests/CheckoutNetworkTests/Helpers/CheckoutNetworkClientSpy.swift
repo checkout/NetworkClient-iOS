@@ -12,7 +12,7 @@ class CheckoutNetworkClientSpy: CheckoutNetworkClient {
   private(set) var configuration: RequestConfiguration!
 
   var expectedResponseBody: FakeObject?
-  var expectedError: Error?
+  var expectedError: CheckoutNetworkError?
 
   override func runRequest<T>(with configuration: RequestConfiguration, completionHandler: @escaping CheckoutNetworkClient.CompletionHandler<T>) where T : Decodable {
     runRequestCallCount += 1

@@ -8,7 +8,7 @@
 import Foundation
 
 extension CheckoutNetworkClient {
-  func getErrorFromResponse(_ response: URLResponse?, data: Data?) -> Error? {
+  func getErrorFromResponse(_ response: URLResponse?, data: Data?) -> CheckoutNetworkError? {
     guard let response = response as? HTTPURLResponse else {
       return CheckoutNetworkError.invalidURLResponse
     }
