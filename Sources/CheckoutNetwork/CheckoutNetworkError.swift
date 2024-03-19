@@ -15,10 +15,15 @@ public enum CheckoutNetworkError: LocalizedError, Equatable {
   /// When a response could not be bound to an instance of HTTPURLResponse
   case invalidURLResponse
 
+  /// A decoding error has been received while decoding the API response
+  case decoding(errorDescription: String)
+
   /// Network response was not in the 200 range
   case unexpectedHTTPResponse(code: Int)
 
-  /// Network call and completion appear valid but no data was returned making the parsing impossible. Use runRequest method with NoDataResponseCompletionHandler if no data is expected (HTTP 204 is a success case with no content being returned)
+  /// Network call and completion appear valid but no data was returned making the parsing impossible.
+  /// Use runRequest method with NoDataResponseCompletionHandler if no data is expected
+  /// Refresher: HTTP 204 is a success case with no content being returned
   case noDataResponseReceived
 
   /// Network response returned with HTTP Code 422
@@ -47,6 +52,9 @@ public enum CheckoutNetworkError: LocalizedError, Equatable {
 
     case .invalidURLResponse:
       return "Could not instantiate an HTTPURLResponse with the received response value"
+
+    case .decoding(let errorDescription):
+      return errorDescription
 
     case .unexpectedHTTPResponse(let code):
       return "Received an unexpected HTTP response: \(code)"
