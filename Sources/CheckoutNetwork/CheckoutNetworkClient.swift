@@ -70,7 +70,7 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                     completionHandler(error)
                     return
                 }
-              if let responseError = self.getErrorFromResponse(response, data: nil) {
+              if let responseError = self.getErrorFromResponse(response, data: data) {
                     completionHandler(responseError)
                     return
                 }
