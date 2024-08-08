@@ -12,6 +12,7 @@ public struct RequestConfiguration {
     
     /// Request created from the consumers configuration
     private(set) public var request: URLRequest
+    var decodingStrategy: JSONDecoder.KeyDecodingStrategy
 
     /// Create request configuration with provided parameters. In case of failure will throw a `CheckoutNetworkError`
     ///
@@ -26,7 +27,8 @@ public struct RequestConfiguration {
                 queryItems: [String: String] = [:],
                 customHeaders: [String: String] = [:],
                 bodyData: Data? = nil,
-                mimeType: MIMEType = .JSON) throws {
+                mimeType: MIMEType = .JSON,
+                decodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) throws {
         // Validate URL can be broken down to components for formatting
         guard var components = URLComponents(url: path.url(), resolvingAgainstBaseURL: true) else {
             throw CheckoutNetworkError.invalidURL
@@ -54,7 +56,8 @@ public struct RequestConfiguration {
             request.addValue(mimeType.rawValue, forHTTPHeaderField: MIMEType.key)
         }
         customHeaders.forEach { request.addValue($0.value, forHTTPHeaderField: $0.key) }
-        
+      
+        self.decodingStrategy = decodingStrategy
         self.request = request
     }
 
