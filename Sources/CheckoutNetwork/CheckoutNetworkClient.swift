@@ -47,7 +47,10 @@ public class CheckoutNetworkClient: CheckoutClientInterface {
                 }
 
                 do {
-                    let dataResponse = try JSONDecoder().decode(T.self, from: data)
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = configuration.decodingStrategy
+                    let dataResponse = try decoder.decode(T.self, from: data)
+
                     completionHandler(.success(dataResponse))
                 } catch {
                     completionHandler(.failure(error))
