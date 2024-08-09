@@ -30,7 +30,8 @@ public struct RequestConfiguration {
                 mimeType: MIMEType = .JSON,
                 decodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) throws {
         // Validate URL can be broken down to components for formatting
-        guard var components = URLComponents(url: path.url(), resolvingAgainstBaseURL: true) else {
+        guard let url = path.url,
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             throw CheckoutNetworkError.invalidURL
         }
         
