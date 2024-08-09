@@ -88,7 +88,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let testResponseCode = 300
         
         let expectedData = "nothing".data(using: .utf8)
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 300,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -142,7 +142,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let client = CheckoutNetworkClient(session: fakeSession)
         let testConfig = try! RequestConfiguration(path: FakePath.testServices)
         
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -171,7 +171,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let testConfig = try! RequestConfiguration(path: FakePath.testServices)
         
         let expectedData = Data()
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -205,7 +205,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let fakeObjectString = String(data: fakeObjectEncoded, encoding: .utf8)!
         // Make id key invalid for decoding
         fakeObjectEncoded = fakeObjectString.replacingOccurrences(of: "d", with: "").data(using: .utf8)!
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -236,7 +236,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         
         let fakeObject = FakeObject(id: UUID().uuidString)
         let fakeObjectEncoded = try! JSONEncoder().encode(fakeObject)
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -289,7 +289,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let testResponseCode = 300
         
         let expectedData = "nothing".data(using: .utf8)
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 300,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -335,7 +335,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         
         let fakeObject = FakeObject(id: UUID().uuidString)
         let fakeObjectEncoded = try! JSONEncoder().encode(fakeObject)
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)
@@ -358,7 +358,7 @@ final class CheckoutNetworkClientTests: XCTestCase {
         let client = CheckoutNetworkClient(session: fakeSession)
         let testConfig = try! RequestConfiguration(path: FakePath.testServices)
         
-        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url(),
+        let expectedResponse = HTTPURLResponse(url: FakePath.testServices.url!,
                                                statusCode: 200,
                                                httpVersion: nil,
                                                headerFields: nil)

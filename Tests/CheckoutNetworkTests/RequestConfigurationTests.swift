@@ -15,7 +15,7 @@ final class RequestConfigurationTests: XCTestCase {
         let config = try! RequestConfiguration(path: testPath)
         let request = config.request
         
-        XCTAssertEqual(request.url, testPath.url())
+        XCTAssertEqual(request.url, testPath.url)
         XCTAssertEqual(request.httpMethod, HTTPMethod.get.rawValue)
         XCTAssertNil(request.httpBody)
         XCTAssertEqual(request.allHTTPHeaderFields, [:])
@@ -29,7 +29,7 @@ final class RequestConfigurationTests: XCTestCase {
                                                mimeType: testMime)
         let request = config.request
         
-        XCTAssertEqual(request.url, testPath.url())
+        XCTAssertEqual(request.url, testPath.url)
         XCTAssertEqual(request.httpMethod, HTTPMethod.get.rawValue)
         XCTAssertNil(request.httpBody)
         XCTAssertEqual(request.allHTTPHeaderFields, [:])
@@ -44,7 +44,7 @@ final class RequestConfigurationTests: XCTestCase {
                                                mimeType: testMime)
         let request = config.request
         
-        XCTAssertEqual(request.url, testPath.url())
+        XCTAssertEqual(request.url, testPath.url)
         XCTAssertEqual(request.httpMethod, HTTPMethod.get.rawValue)
         XCTAssertEqual(request.httpBody, testData)
         XCTAssertEqual(request.allHTTPHeaderFields, [MIMEType.key: testMime.rawValue])

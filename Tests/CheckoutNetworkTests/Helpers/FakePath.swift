@@ -12,7 +12,7 @@ enum FakePath: NetworkPath {
     
     case testServices
     
-    func url() -> URL {
+    var url: URL? {
         switch self {
         case .testServices: return URL(string: "https://google-not.now")!
         }
