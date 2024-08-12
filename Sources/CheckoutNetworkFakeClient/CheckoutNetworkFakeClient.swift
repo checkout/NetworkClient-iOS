@@ -12,7 +12,7 @@ final public class CheckoutNetworkFakeClient: CheckoutClientInterface {
     public var calledRequests: [(config: RequestConfiguration, completion: Any)] = []
 
     public var calledAsyncRequests: [RequestConfiguration] = []
-    public var dataToBeReturned: Decodable!
+    public var dataToBeReturned: Data!
     public var errorToBeThrown: CheckoutNetworkError?
 
     public func runRequest<T: Decodable>(with configuration: RequestConfiguration,
@@ -31,7 +31,10 @@ extension CheckoutNetworkFakeClient {
       calledAsyncRequests.append(configuration)
       // swiftlint:disable force_cast
       guard let error = errorToBeThrown else {
-        return dataToBeReturned as! T
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = configuration.decodingStrategy
+        let decoded = try decoder.decode(T.self, from: dataToBeReturned)
+        return decoded
       }
       throw error
       // swiftlint:enable force_cast

@@ -12,7 +12,7 @@ public struct RequestConfiguration {
     
     /// Request created from the consumers configuration
     private(set) public var request: URLRequest
-    var decodingStrategy: JSONDecoder.KeyDecodingStrategy
+    private(set) public var decodingStrategy: JSONDecoder.KeyDecodingStrategy
 
     /// Create request configuration with provided parameters. In case of failure will throw a `CheckoutNetworkError`
     ///
