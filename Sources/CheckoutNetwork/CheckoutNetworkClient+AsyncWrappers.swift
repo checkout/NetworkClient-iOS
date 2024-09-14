@@ -11,7 +11,7 @@ public extension CheckoutNetworkClient {
 
   func runRequest<T: Decodable>(with configuration: RequestConfiguration) async throws -> T {
     return try await withCheckedThrowingContinuation { continuation in
-      runRequest(with: configuration) { (result: Result<T, Error>) in
+      runRequest(with: configuration) { (result: Result<T, CheckoutNetworkError>) in
         switch result {
         case .success(let response):
           continuation.resume(returning: response)
@@ -24,7 +24,7 @@ public extension CheckoutNetworkClient {
 
   func runRequest(with configuration: RequestConfiguration) async throws {
     return try await withCheckedThrowingContinuation { continuation in
-      runRequest(with: configuration) { (error: Error?) in
+      runRequest(with: configuration) { (error: CheckoutNetworkError?) in
 
         guard let error = error else {
           continuation.resume(returning: Void())
