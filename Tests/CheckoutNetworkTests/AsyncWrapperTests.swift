@@ -18,7 +18,7 @@ extension AsyncWrapperTests {
     fakeSession.calledDataTasksReturn = fakeDataTask
     let client = CheckoutNetworkClientSpy(session: fakeSession)
     let testConfig = try! RequestConfiguration(path: FakePath.testServices)
-
+    
     let expectedResponseBody = FakeObject(id: "some response")
     client.expectedResponseBody = expectedResponseBody
     client.expectedError = nil
@@ -27,25 +27,25 @@ extension AsyncWrapperTests {
     XCTAssertEqual(client.runRequestCallCount, 1)
     XCTAssertEqual(responseBody, expectedResponseBody)
   }
-
+  
   func test_whenRunRequestReturnsError_ThenAsyncRunRequestPropagatesIt() async throws {
     let fakeSession = FakeSession()
     let fakeDataTask = FakeDataTask()
     fakeSession.calledDataTasksReturn = fakeDataTask
     let client = CheckoutNetworkClientSpy(session: fakeSession)
     let testConfig = try! RequestConfiguration(path: FakePath.testServices)
-
-    let expectedError = FakeError.someError
+    
+    let expectedError = CheckoutNetworkError.other(underlyingError: .init(domain: "some_error", code: 1))
     client.expectedResponseBody = nil
     client.expectedError = expectedError
-
+    
     do {
       let _: FakeObject = try await client.runRequest(with: testConfig)
       XCTFail("An error was expected to be thrown")
-    } catch let error as FakeError {
+    } catch let error {
       XCTAssertEqual(client.configuration.request, testConfig.request)
       XCTAssertEqual(client.runRequestCallCount, 1)
-      XCTAssertEqual(error, expectedError)
+      XCTAssertEqual(error as? CheckoutNetworkError, expectedError)
     }
   }
 }
@@ -59,7 +59,7 @@ extension AsyncWrapperTests {
     fakeSession.calledDataTasksReturn = fakeDataTask
     let client = CheckoutNetworkClientSpy(session: fakeSession)
     let testConfig = try! RequestConfiguration(path: FakePath.testServices)
-
+    
     client.expectedResponseBody = nil
     client.expectedError = nil
     do {
@@ -70,25 +70,25 @@ extension AsyncWrapperTests {
       XCTFail("Should have not thrown an error \(error)")
     }
   }
-
+  
   func test_whenRunRequestWithNoDataReturnsError_ThenAsyncRunRequestPropagatesIt() async throws {
     let fakeSession = FakeSession()
     let fakeDataTask = FakeDataTask()
     fakeSession.calledDataTasksReturn = fakeDataTask
     let client = CheckoutNetworkClientSpy(session: fakeSession)
     let testConfig = try! RequestConfiguration(path: FakePath.testServices)
-
-    let expectedError = FakeError.someError
+    
+    let expectedError = CheckoutNetworkError.other(underlyingError: .init(domain: "some_error", code: 1))
     client.expectedResponseBody = nil
     client.expectedError = expectedError
-
+    
     do {
       try await client.runRequest(with: testConfig)
       XCTFail("An error was expected to be thrown")
-    } catch let error as FakeError {
+    } catch let error {
       XCTAssertEqual(client.configuration.request, testConfig.request)
       XCTAssertEqual(client.runRequestCallCount, 1)
-      XCTAssertEqual(error, expectedError)
+      XCTAssertEqual(error as? CheckoutNetworkError, expectedError)
     }
   }
 }

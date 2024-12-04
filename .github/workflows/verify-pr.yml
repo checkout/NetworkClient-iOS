@@ -26,7 +26,6 @@ jobs:
   verify-pr:
     name: Verify PR
     runs-on: macos-14-xlarge
-    needs: lint
 
     steps:
     - name: Checkout repository
